@@ -27,16 +27,20 @@ export function InvoiceForm() {
 
   useEffect(() => {
     async function load() {
-      const [branchRes, customerRes, productRes] = await Promise.all([
-        apiFetch<{ branches: Branch[] }>('/api/branches'),
-        apiFetch<{ customers: Customer[] }>('/api/customers'),
-        apiFetch<{ products: Product[] }>('/api/products')
-      ]);
-      setBranches(branchRes.branches);
-      setCustomers(customerRes.customers);
-      setProducts(productRes.products);
-      setBranchId(branchRes.branches[0]?.id ?? '');
-      setCustomerId(customerRes.customers[0]?.id ?? '');
+      try {
+        const [branchRes, customerRes, productRes] = await Promise.all([
+          apiFetch<{ branches: Branch[] }>('/api/branches'),
+          apiFetch<{ customers: Customer[] }>('/api/customers'),
+          apiFetch<{ products: Product[] }>('/api/products')
+        ]);
+        setBranches(branchRes.branches);
+        setCustomers(customerRes.customers);
+        setProducts(productRes.products);
+        setBranchId(branchRes.branches[0]?.id ?? '');
+        setCustomerId(customerRes.customers[0]?.id ?? '');
+      } catch (error) {
+        notifications.show({ color: 'red', title: 'Unable to load invoice data', message: error instanceof Error ? error.message : 'Try again' });
+      }
     }
     void load();
   }, []);

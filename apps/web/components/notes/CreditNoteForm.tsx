@@ -21,11 +21,15 @@ export function NoteForm({ endpoint, title }: { endpoint: string; title: string 
   const [noteDate, setNoteDate] = useState(new Date().toISOString().slice(0, 10));
   useEffect(() => {
     async function load() {
-      const [branchRes, customerRes] = await Promise.all([apiFetch<{ branches: Branch[] }>('/api/branches'), apiFetch<{ customers: Customer[] }>('/api/customers')]);
-      setBranches(branchRes.branches);
-      setCustomers(customerRes.customers);
-      setBranchId(branchRes.branches[0]?.id ?? '');
-      setCustomerId(customerRes.customers[0]?.id ?? '');
+      try {
+        const [branchRes, customerRes] = await Promise.all([apiFetch<{ branches: Branch[] }>('/api/branches'), apiFetch<{ customers: Customer[] }>('/api/customers')]);
+        setBranches(branchRes.branches);
+        setCustomers(customerRes.customers);
+        setBranchId(branchRes.branches[0]?.id ?? '');
+        setCustomerId(customerRes.customers[0]?.id ?? '');
+      } catch (error) {
+        notifications.show({ color: 'red', title: 'Unable to load note data', message: error instanceof Error ? error.message : 'Try again' });
+      }
     }
     void load();
   }, []);

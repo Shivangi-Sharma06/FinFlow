@@ -1,6 +1,7 @@
 'use client';
 
 import { Button, Group, Modal, NumberInput, Select, SimpleGrid, TextInput } from '@mantine/core';
+import { notifications } from '@mantine/notifications';
 import { useState } from 'react';
 import { apiFetch } from '@/lib/api';
 import { GST_RATES } from '@/lib/gst';
@@ -16,12 +17,16 @@ export function ProductForm({ opened, onClose, onSaved }: { opened: boolean; onC
   const [sellingPrice, setSellingPrice] = useState(0);
 
   async function save() {
-    await apiFetch('/api/products', {
-      method: 'POST',
-      body: JSON.stringify({ name, hsnSacCode, type, unit, gstRate, cessRate, purchasePrice, sellingPrice })
-    });
-    onSaved();
-    onClose();
+    try {
+      await apiFetch('/api/products', {
+        method: 'POST',
+        body: JSON.stringify({ name, hsnSacCode, type, unit, gstRate, cessRate, purchasePrice, sellingPrice })
+      });
+      onSaved();
+      onClose();
+    } catch (error) {
+      notifications.show({ color: 'red', title: 'Unable to save product', message: error instanceof Error ? error.message : 'Try again' });
+    }
   }
 
   return (

@@ -1,6 +1,7 @@
 'use client';
 
 import { Button, Group, Paper, Stack, Table, Title } from '@mantine/core';
+import { notifications } from '@mantine/notifications';
 import { Plus } from 'lucide-react';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
@@ -11,7 +12,11 @@ type Note = { id: string; noteNumber: string; reason: string; grandTotal: string
 export function NotesPage({ endpoint, title, createHref }: { endpoint: string; title: string; createHref: string }) {
   const [notes, setNotes] = useState<Note[]>([]);
   useEffect(() => {
-    void apiFetch<{ notes: Note[] }>(endpoint).then((response) => setNotes(response.notes));
+    void apiFetch<{ notes: Note[] }>(endpoint)
+      .then((response) => setNotes(response.notes))
+      .catch((error) => {
+        notifications.show({ color: 'red', title: 'Unable to load notes', message: error instanceof Error ? error.message : 'Try again' });
+      });
   }, [endpoint]);
   return (
     <Stack>
