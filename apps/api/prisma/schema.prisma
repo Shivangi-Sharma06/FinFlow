@@ -1,0 +1,419 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+model User {
+  id             String       @id @default(cuid())
+  name           String
+  email          String       @unique
+  passwordHash   String
+  role           Role         @default(ACCOUNTANT)
+  organisationId String
+  branchId       String?
+  isActive       Boolean      @default(true)
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  organisation   Organisation @relation(fields: [organisationId], references: [id])
+  branch         Branch?      @relation(fields: [branchId], references: [id])
+  accounts       Account[]
+  sessions       Session[]
+  auditLogs      AuditLog[]
+  invoices       Invoice[]    @relation("CreatedInvoices")
+  creditNotes    CreditNote[] @relation("CreatedCreditNotes")
+  debitNotes     DebitNote[]  @relation("CreatedDebitNotes")
+  payments       Payment[]
+
+  @@index([organisationId])
+  @@index([branchId])
+}
+
+enum Role {
+  SUPER_ADMIN
+  BRANCH_MANAGER
+  ACCOUNTANT
+  VIEWER
+}
+
+model Organisation {
+  id        String   @id @default(cuid())
+  name      String
+  gstin     String   @unique
+  pan       String
+  address   String
+  city      String
+  state     String
+  stateCode String
+  pincode   String
+  email     String?
+  phone     String?
+  logoUrl   String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  branches    Branch[]
+  users       User[]
+  customers   Customer[]
+  vendors     Vendor[]
+  products    Product[]
+  invoices    Invoice[]
+  creditNotes CreditNote[]
+  debitNotes  DebitNote[]
+}
+
+model Branch {
+  id             String       @id @default(cuid())
+  organisationId String
+  name           String
+  code           String
+  gstin          String?
+  address        String
+  city           String
+  state          String
+  stateCode      String
+  pincode        String
+  email          String?
+  phone          String?
+  isActive       Boolean      @default(true)
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  organisation   Organisation @relation(fields: [organisationId], references: [id])
+  users          User[]
+  invoices       Invoice[]
+  creditNotes    CreditNote[]
+  debitNotes     DebitNote[]
+
+  @@unique([organisationId, code])
+  @@index([organisationId])
+}
+
+model Customer {
+  id                String       @id @default(cuid())
+  organisationId    String
+  name              String
+  gstin             String?
+  pan               String?
+  email             String?
+  phone             String?
+  billingAddress    String
+  billingCity       String
+  billingState      String
+  billingStateCode  String
+  billingPincode    String
+  shippingAddress   String?
+  shippingCity      String?
+  shippingState     String?
+  shippingStateCode String?
+  shippingPincode   String?
+  isActive          Boolean      @default(true)
+  createdAt         DateTime     @default(now())
+  updatedAt         DateTime     @updatedAt
+  organisation      Organisation @relation(fields: [organisationId], references: [id])
+  invoices          Invoice[]
+  creditNotes       CreditNote[]
+  debitNotes        DebitNote[]
+
+  @@index([organisationId])
+}
+
+model Vendor {
+  id               String       @id @default(cuid())
+  organisationId   String
+  name             String
+  gstin            String?
+  pan              String?
+  email            String?
+  phone            String?
+  billingAddress   String
+  billingCity      String
+  billingState     String
+  billingStateCode String
+  billingPincode   String
+  isActive         Boolean      @default(true)
+  createdAt        DateTime     @default(now())
+  updatedAt        DateTime     @updatedAt
+  organisation     Organisation @relation(fields: [organisationId], references: [id])
+
+  @@index([organisationId])
+}
+
+model Product {
+  id             String       @id @default(cuid())
+  organisationId String
+  name           String
+  description    String?
+  hsnSacCode     String
+  type           ProductType  @default(GOODS)
+  unit           String
+  gstRate        Decimal      @db.Decimal(5, 2)
+  cessRate       Decimal      @default(0) @db.Decimal(5, 2)
+  purchasePrice  Decimal      @db.Decimal(14, 2)
+  sellingPrice   Decimal      @db.Decimal(14, 2)
+  isActive       Boolean      @default(true)
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  organisation   Organisation @relation(fields: [organisationId], references: [id])
+  invoiceItems   InvoiceItem[]
+
+  @@index([organisationId])
+}
+
+enum ProductType {
+  GOODS
+  SERVICE
+}
+
+model Invoice {
+  id                String        @id @default(cuid())
+  invoiceNumber     String
+  organisationId    String
+  branchId          String
+  customerId        String
+  status            InvoiceStatus @default(DRAFT)
+  invoiceDate       DateTime
+  dueDate           DateTime?
+  placeOfSupply     String
+  placeOfSupplyCode String
+  isInterState      Boolean
+  subtotal          Decimal       @db.Decimal(14, 2)
+  totalCgst         Decimal       @default(0) @db.Decimal(14, 2)
+  totalSgst         Decimal       @default(0) @db.Decimal(14, 2)
+  totalIgst         Decimal       @default(0) @db.Decimal(14, 2)
+  totalCess         Decimal       @default(0) @db.Decimal(14, 2)
+  totalDiscount     Decimal       @default(0) @db.Decimal(14, 2)
+  roundOff          Decimal       @default(0) @db.Decimal(14, 2)
+  grandTotal        Decimal       @db.Decimal(14, 2)
+  amountPaid        Decimal       @default(0) @db.Decimal(14, 2)
+  balanceDue        Decimal       @db.Decimal(14, 2)
+  notes             String?
+  termsConditions   String?
+  createdById       String
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+  organisation      Organisation  @relation(fields: [organisationId], references: [id])
+  branch            Branch        @relation(fields: [branchId], references: [id])
+  customer          Customer      @relation(fields: [customerId], references: [id])
+  createdBy         User          @relation("CreatedInvoices", fields: [createdById], references: [id])
+  items             InvoiceItem[]
+  payments          Payment[]
+  creditNotes       CreditNote[]
+  debitNotes        DebitNote[]
+  auditLogs         AuditLog[]
+
+  @@unique([invoiceNumber, organisationId])
+  @@index([organisationId])
+  @@index([branchId])
+  @@index([customerId])
+}
+
+enum InvoiceStatus {
+  DRAFT
+  ISSUED
+  PAID
+  PARTIALLY_PAID
+  CANCELLED
+}
+
+model InvoiceItem {
+  id            String  @id @default(cuid())
+  invoiceId     String
+  productId     String
+  description   String?
+  hsnSacCode    String
+  quantity      Decimal @db.Decimal(14, 3)
+  unit          String
+  rate          Decimal @db.Decimal(14, 2)
+  discount      Decimal @default(0) @db.Decimal(14, 2)
+  taxableAmount Decimal @db.Decimal(14, 2)
+  gstRate       Decimal @db.Decimal(5, 2)
+  cessRate      Decimal @default(0) @db.Decimal(5, 2)
+  cgst          Decimal @default(0) @db.Decimal(14, 2)
+  sgst          Decimal @default(0) @db.Decimal(14, 2)
+  igst          Decimal @default(0) @db.Decimal(14, 2)
+  cess          Decimal @default(0) @db.Decimal(14, 2)
+  lineTotal     Decimal @db.Decimal(14, 2)
+  invoice       Invoice @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  product       Product @relation(fields: [productId], references: [id])
+
+  @@index([invoiceId])
+}
+
+model Payment {
+  id          String   @id @default(cuid())
+  invoiceId   String
+  amount      Decimal  @db.Decimal(14, 2)
+  paymentDate DateTime
+  method      String
+  reference   String?
+  recordedById String
+  createdAt   DateTime @default(now())
+  invoice      Invoice  @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  recordedBy   User     @relation(fields: [recordedById], references: [id])
+
+  @@index([invoiceId])
+}
+
+model CreditNote {
+  id             String           @id @default(cuid())
+  noteNumber     String
+  organisationId String
+  branchId       String
+  customerId     String
+  invoiceId      String?
+  reason         String
+  noteDate       DateTime
+  isInterState   Boolean
+  subtotal       Decimal          @db.Decimal(14, 2)
+  totalCgst      Decimal          @default(0) @db.Decimal(14, 2)
+  totalSgst      Decimal          @default(0) @db.Decimal(14, 2)
+  totalIgst      Decimal          @default(0) @db.Decimal(14, 2)
+  totalCess      Decimal          @default(0) @db.Decimal(14, 2)
+  grandTotal     Decimal          @db.Decimal(14, 2)
+  status         NoteStatus       @default(DRAFT)
+  createdById    String
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+  organisation   Organisation     @relation(fields: [organisationId], references: [id])
+  branch         Branch           @relation(fields: [branchId], references: [id])
+  customer       Customer         @relation(fields: [customerId], references: [id])
+  invoice        Invoice?         @relation(fields: [invoiceId], references: [id])
+  createdBy      User             @relation("CreatedCreditNotes", fields: [createdById], references: [id])
+  items          CreditNoteItem[]
+
+  @@unique([noteNumber, organisationId])
+  @@index([organisationId])
+  @@index([branchId])
+}
+
+model CreditNoteItem {
+  id            String     @id @default(cuid())
+  creditNoteId  String
+  description   String
+  hsnSacCode    String
+  quantity      Decimal    @db.Decimal(14, 3)
+  unit          String
+  rate          Decimal    @db.Decimal(14, 2)
+  taxableAmount Decimal    @db.Decimal(14, 2)
+  gstRate       Decimal    @db.Decimal(5, 2)
+  cessRate      Decimal    @default(0) @db.Decimal(5, 2)
+  cgst          Decimal    @default(0) @db.Decimal(14, 2)
+  sgst          Decimal    @default(0) @db.Decimal(14, 2)
+  igst          Decimal    @default(0) @db.Decimal(14, 2)
+  cess          Decimal    @default(0) @db.Decimal(14, 2)
+  lineTotal     Decimal    @db.Decimal(14, 2)
+  creditNote    CreditNote @relation(fields: [creditNoteId], references: [id], onDelete: Cascade)
+}
+
+model DebitNote {
+  id             String          @id @default(cuid())
+  noteNumber     String
+  organisationId String
+  branchId       String
+  customerId     String
+  invoiceId      String?
+  reason         String
+  noteDate       DateTime
+  isInterState   Boolean
+  subtotal       Decimal         @db.Decimal(14, 2)
+  totalCgst      Decimal         @default(0) @db.Decimal(14, 2)
+  totalSgst      Decimal         @default(0) @db.Decimal(14, 2)
+  totalIgst      Decimal         @default(0) @db.Decimal(14, 2)
+  totalCess      Decimal         @default(0) @db.Decimal(14, 2)
+  grandTotal     Decimal         @db.Decimal(14, 2)
+  status         NoteStatus      @default(DRAFT)
+  createdById    String
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  organisation   Organisation    @relation(fields: [organisationId], references: [id])
+  branch         Branch          @relation(fields: [branchId], references: [id])
+  customer       Customer        @relation(fields: [customerId], references: [id])
+  invoice        Invoice?        @relation(fields: [invoiceId], references: [id])
+  createdBy      User            @relation("CreatedDebitNotes", fields: [createdById], references: [id])
+  items          DebitNoteItem[]
+
+  @@unique([noteNumber, organisationId])
+  @@index([organisationId])
+  @@index([branchId])
+}
+
+model DebitNoteItem {
+  id            String    @id @default(cuid())
+  debitNoteId   String
+  description   String
+  hsnSacCode    String
+  quantity      Decimal   @db.Decimal(14, 3)
+  unit          String
+  rate          Decimal   @db.Decimal(14, 2)
+  taxableAmount Decimal   @db.Decimal(14, 2)
+  gstRate       Decimal   @db.Decimal(5, 2)
+  cessRate      Decimal   @default(0) @db.Decimal(5, 2)
+  cgst          Decimal   @default(0) @db.Decimal(14, 2)
+  sgst          Decimal   @default(0) @db.Decimal(14, 2)
+  igst          Decimal   @default(0) @db.Decimal(14, 2)
+  cess          Decimal   @default(0) @db.Decimal(14, 2)
+  lineTotal     Decimal   @db.Decimal(14, 2)
+  debitNote     DebitNote @relation(fields: [debitNoteId], references: [id], onDelete: Cascade)
+}
+
+enum NoteStatus {
+  DRAFT
+  ISSUED
+  CANCELLED
+}
+
+model AuditLog {
+  id         String   @id @default(cuid())
+  userId     String
+  action     String
+  entityType String
+  entityId   String
+  invoiceId  String?
+  before     Json?
+  after      Json?
+  ipAddress  String?
+  createdAt  DateTime @default(now())
+  user       User     @relation(fields: [userId], references: [id])
+  invoice    Invoice? @relation(fields: [invoiceId], references: [id])
+
+  @@index([userId])
+  @@index([entityId])
+}

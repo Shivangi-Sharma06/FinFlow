@@ -1,0 +1,27 @@
+{
+  "name": "finflow-ledgerx",
+  "private": true,
+  "version": "0.1.0",
+  "description": "LedgerX multi-branch GST accounting platform",
+  "workspaces": [
+    "apps/web",
+    "apps/api"
+  ],
+  "scripts": {
+    "dev": "concurrently \"npm run dev --workspace apps/api\" \"npm run dev --workspace apps/web\"",
+    "dev:web": "npm run dev --workspace apps/web",
+    "dev:api": "npm run dev --workspace apps/api",
+    "build": "npm run build --workspace apps/api && npm run build --workspace apps/web",
+    "typecheck": "npm run typecheck --workspace apps/api && npm run typecheck --workspace apps/web",
+    "test": "npm run test --workspace apps/api",
+    "prisma:generate": "npm run prisma:generate --workspace apps/api",
+    "prisma:migrate": "npm run prisma:migrate --workspace apps/api",
+    "seed": "npm run seed --workspace apps/api"
+  },
+  "prisma": {
+    "seed": "tsx apps/api/prisma/seed.ts"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.0"
+  }
+}
