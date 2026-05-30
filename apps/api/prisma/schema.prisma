@@ -30,8 +30,11 @@ model Session {
   id           String   @id @default(cuid())
   sessionToken String   @unique
   userId       String
+  organisationId String?
   expires      DateTime
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([organisationId])
 }
 
 model VerificationToken {
@@ -68,6 +71,7 @@ model User {
 }
 
 enum Role {
+  PLATFORM_ADMIN
   SUPER_ADMIN
   BRANCH_MANAGER
   ACCOUNTANT

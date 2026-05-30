@@ -1,9 +1,11 @@
 import type { Branch, Organisation, Role, User } from '@prisma/client';
 import type { Request } from 'express';
 
-export type AuthUser = Pick<User, 'id' | 'name' | 'email' | 'role' | 'organisationId' | 'branchId'> & {
+export type AuthUser = Pick<User, 'id' | 'name' | 'email' | 'role' | 'branchId'> & {
+  organisationId: string;
   branch?: Branch | null;
   organisation?: Organisation;
+  isPlatformAdmin: boolean;
 };
 
 export type AuthRequest = Request & {

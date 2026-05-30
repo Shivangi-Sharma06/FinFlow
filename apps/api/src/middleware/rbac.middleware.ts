@@ -6,12 +6,16 @@ const rank: Record<Role, number> = {
   VIEWER: 1,
   ACCOUNTANT: 2,
   BRANCH_MANAGER: 3,
-  SUPER_ADMIN: 4
+  SUPER_ADMIN: 4,
+  PLATFORM_ADMIN: 5
 };
 
 export function requireRole(...roles: Role[]) {
   return (req: Request, res: Response, next: NextFunction) => {
     const user = (req as AuthRequest).user;
+    if (user.isPlatformAdmin) {
+      return next();
+    }
     if (!roles.includes(user.role)) {
       return res.status(403).json({ error: 'Insufficient permissions', code: 'FORBIDDEN' });
     }
@@ -22,6 +26,9 @@ export function requireRole(...roles: Role[]) {
 export function requireMinimumRole(role: Role) {
   return (req: Request, res: Response, next: NextFunction) => {
     const user = (req as AuthRequest).user;
+    if (user.isPlatformAdmin) {
+      return next();
+    }
     if (rank[user.role] < rank[role]) {
       return res.status(403).json({ error: 'Insufficient permissions', code: 'FORBIDDEN' });
     }
@@ -30,10 +37,10 @@ export function requireMinimumRole(role: Role) {
 }
 
 export function scopeToBranch(req: AuthRequest): BranchScope {
-  if (req.user.role === 'SUPER_ADMIN') return {};
+  if (req.user.isPlatformAdmin || req.user.role === 'SUPER_ADMIN') return {};
   return { branchId: req.user.branchId ?? undefined };
 }
 
 export function assertBranchAccess(req: AuthRequest, branchId: string) {
-  return req.user.role === 'SUPER_ADMIN' || req.user.branchId === branchId;
+  return req.user.isPlatformAdmin || req.user.role === 'SUPER_ADMIN' || req.user.branchId === branchId;
 }

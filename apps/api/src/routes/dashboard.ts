@@ -11,7 +11,7 @@ dashboardRouter.get(
   '/',
   asyncHandler(async (req, res) => {
     const user = (req as AuthRequest).user;
-    const branchId = user.role === 'SUPER_ADMIN' && typeof req.query.branchId === 'string' ? req.query.branchId : undefined;
+    const branchId = (user.role === 'SUPER_ADMIN' || user.isPlatformAdmin) && typeof req.query.branchId === 'string' ? req.query.branchId : undefined;
     const where = {
       organisationId: user.organisationId,
       ...scopeToBranch(req as AuthRequest),

@@ -28,15 +28,26 @@ export const requireAuth = asyncHandler(async (req: Request, res: Response, next
     return res.status(401).json({ error: 'Invalid or expired session', code: 'UNAUTHENTICATED' });
   }
 
+  const organisationId = session.organisationId ?? session.user.organisationId;
+  if (!organisationId) {
+    return res.status(401).json({ error: 'No organisation is selected for this session', code: 'UNAUTHENTICATED' });
+  }
+
+  const organisation = await prisma.organisation.findUnique({ where: { id: organisationId } });
+  if (!organisation) {
+    return res.status(401).json({ error: 'Organisation not found for this session', code: 'UNAUTHENTICATED' });
+  }
+
   (req as AuthRequest).user = {
     id: session.user.id,
     name: session.user.name,
     email: session.user.email,
     role: session.user.role,
-    organisationId: session.user.organisationId,
+    organisationId,
     branchId: session.user.branchId,
     branch: session.user.branch,
-    organisation: session.user.organisation
+    organisation,
+    isPlatformAdmin: session.user.role === 'PLATFORM_ADMIN'
   };
 
   return next();

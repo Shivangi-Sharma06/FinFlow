@@ -14,7 +14,7 @@ usersRouter.get(
     const user = (req as AuthRequest).user;
     const users = await prisma.user.findMany({
       where:
-        user.role === 'SUPER_ADMIN'
+        user.role === 'SUPER_ADMIN' || user.isPlatformAdmin
           ? { organisationId: user.organisationId }
           : { organisationId: user.organisationId, branchId: user.branchId },
       include: { branch: true },

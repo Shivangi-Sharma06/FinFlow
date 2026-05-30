@@ -11,7 +11,7 @@ branchesRouter.get(
   asyncHandler(async (req, res) => {
     const user = (req as AuthRequest).user;
     const branches = await prisma.branch.findMany({
-      where: user.role === 'SUPER_ADMIN' ? { organisationId: user.organisationId } : { id: user.branchId ?? '' },
+      where: user.role === 'SUPER_ADMIN' || user.isPlatformAdmin ? { organisationId: user.organisationId } : { id: user.branchId ?? '' },
       orderBy: { name: 'asc' }
     });
     return res.json({ branches });

@@ -1,5 +1,19 @@
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:4000';
 
+type ApiUser = {
+  id: string;
+  name: string;
+  email: string;
+  role: string;
+  organisationId: string;
+  branchId: string | null;
+  isPlatformAdmin: boolean;
+};
+
+export type AuthMeResponse = { user: ApiUser };
+export type AuthOrganisationsResponse = { organisations: Array<{ id: string; name: string }> };
+export type SwitchOrganisationResponse = { sessionToken: string; user: ApiUser };
+
 export function getStoredToken() {
   if (typeof window === 'undefined') return null;
   return window.localStorage.getItem('ledgerx.sessionToken');
@@ -33,4 +47,11 @@ export async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> 
 
 export function apiPdfUrl(invoiceId: string) {
   return `${API_URL}/api/invoices/${invoiceId}/pdf`;
+}
+
+export async function switchOrganisation(organisationId: string): Promise<SwitchOrganisationResponse> {
+  return apiFetch<SwitchOrganisationResponse>('/api/auth/switch-organisation', {
+    method: 'POST',
+    body: JSON.stringify({ organisationId })
+  });
 }

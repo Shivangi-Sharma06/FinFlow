@@ -38,14 +38,14 @@ export function AppShellWrapper({ children }: { children: React.ReactNode }) {
         <Group h="100%" px="xl">
           <Burger opened={opened} onClick={toggle} hiddenFrom="sm" size="sm" color="#f7f5f0" />
           <Text c="#c9c0ad" size="sm">
-            Multi-branch accounting, GST-first
+            GST-ready accounting across branches and organisations
           </Text>
         </Group>
       </AppShell.Header>
       <AppShell.Navbar>
         <Sidebar />
       </AppShell.Navbar>
-      <AppShell.Main>{authChecked ? children : <Text c="#c9c0ad">Loading workspace...</Text>}</AppShell.Main>
+      <AppShell.Main>{authChecked ? children : <Text c="#c9c0ad">Securing your workspace...</Text>}</AppShell.Main>
     </AppShell>
   );
 }

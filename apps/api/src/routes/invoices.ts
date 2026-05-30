@@ -15,7 +15,7 @@ invoicesRouter.get(
   asyncHandler(async (req, res) => {
     const user = (req as AuthRequest).user;
     const status = typeof req.query.status === 'string' ? (req.query.status as InvoiceStatus) : undefined;
-    const branchId = typeof req.query.branchId === 'string' && user.role === 'SUPER_ADMIN' ? req.query.branchId : undefined;
+    const branchId = typeof req.query.branchId === 'string' && (user.role === 'SUPER_ADMIN' || user.isPlatformAdmin) ? req.query.branchId : undefined;
     const invoices = await prisma.invoice.findMany({
       where: {
         organisationId: user.organisationId,

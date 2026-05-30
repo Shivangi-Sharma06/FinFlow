@@ -1,4 +1,4 @@
-export type Role = 'SUPER_ADMIN' | 'BRANCH_MANAGER' | 'ACCOUNTANT' | 'VIEWER';
+export type Role = 'PLATFORM_ADMIN' | 'SUPER_ADMIN' | 'BRANCH_MANAGER' | 'ACCOUNTANT' | 'VIEWER';
 
 export type ApiUser = {
   id: string;
@@ -7,6 +7,7 @@ export type ApiUser = {
   role: Role;
   organisationId: string;
   branchId: string | null;
+  isPlatformAdmin?: boolean;
 };
 
 export type Branch = {
