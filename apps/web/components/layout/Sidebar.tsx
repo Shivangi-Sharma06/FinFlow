@@ -31,7 +31,7 @@ export function Sidebar() {
           GST command center
         </Text>
       </Box>
-      <Divider color="#3f3a36" />
+      <Divider color="#4a423b" />
       <Stack gap={4} flex={1}>
         {links.map((link) => {
           const Icon = link.icon;
@@ -43,9 +43,9 @@ export function Sidebar() {
               href={link.href}
               px="sm"
               py={8}
-              bg={active ? '#383330' : 'transparent'}
+              bg={active ? '#47403a' : 'transparent'}
               c={active ? '#f7f5f0' : '#c9c0ad'}
-              style={{ borderRadius: 3, border: active ? '1px solid #3f3a36' : '1px solid transparent' }}
+              style={{ borderRadius: 3, border: active ? '1px solid #5a514a' : '1px solid transparent' }}
             >
               <Group gap="sm">
                 <Icon size={16} />
@@ -59,7 +59,7 @@ export function Sidebar() {
       </Stack>
       <Button
         variant="subtle"
-        color="warm"
+        color="white"
         leftSection={<LogOut size={16} />}
         onClick={() => {
           clearStoredToken();

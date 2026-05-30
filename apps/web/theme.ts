@@ -36,7 +36,8 @@ export const theme = createTheme({
   components: {
     Button: {
       defaultProps: {
-        radius: 'sm'
+        radius: 'sm',
+        color: 'white'
       }
     },
     Paper: {

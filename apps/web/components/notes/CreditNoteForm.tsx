@@ -51,7 +51,7 @@ export function NoteForm({ endpoint, title }: { endpoint: string; title: string 
         <Select label="Customer" data={customers.map((customer) => ({ value: customer.id, label: customer.name }))} value={customerId} onChange={(value) => setCustomerId(value ?? '')} />
         <TextInput label="Date" type="date" value={noteDate} onChange={(event) => setNoteDate(event.currentTarget.value)} />
         <Textarea label="Reason" value={reason} onChange={(event) => setReason(event.currentTarget.value)} required />
-        <Button onClick={() => void save()} color="warm" c="#2b2622">
+        <Button onClick={() => void save()} color="white" c="#1f1a17">
           Save Draft
         </Button>
       </Stack>

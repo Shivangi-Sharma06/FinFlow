@@ -7,7 +7,7 @@
 html,
 body {
   min-height: 100%;
-  background: #2b2622;
+  background: #322b26;
 }
 
 body {
@@ -20,8 +20,8 @@ a {
 }
 
 .surface {
-  background: #383330;
-  border: 1px solid #3f3a36;
+  background: #3d3731;
+  border: 1px solid #4a423b;
 }
 
 .tableWrap {

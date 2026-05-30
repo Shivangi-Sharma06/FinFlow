@@ -1,8 +1,9 @@
 import type { NextFunction, Request, Response } from 'express';
+import { asyncHandler } from '../lib/async-handler.js';
 import { prisma } from '../lib/prisma.js';
 import type { AuthRequest } from '../types/express.js';
 
-export async function requireAuth(req: Request, res: Response, next: NextFunction) {
+export const requireAuth = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
   const header = req.headers.authorization;
   const queryToken = typeof req.query.token === 'string' ? req.query.token : undefined;
   const token = header?.startsWith('Bearer ') ? header.slice('Bearer '.length) : queryToken;
@@ -39,4 +40,4 @@ export async function requireAuth(req: Request, res: Response, next: NextFunctio
   };
 
   return next();
-}
+});

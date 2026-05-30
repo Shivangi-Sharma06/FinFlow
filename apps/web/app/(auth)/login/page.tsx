@@ -36,7 +36,7 @@ export default function LoginPage() {
   }
 
   return (
-    <Center mih="100vh" bg="#2b2622" p="xl">
+    <Center mih="100vh" bg="#322b26" p="xl">
       <Paper className="surface" p="xl" w="100%" maw={420}>
         <form onSubmit={submit}>
           <Stack>
@@ -50,7 +50,7 @@ export default function LoginPage() {
             </div>
             <TextInput label="Email" leftSection={<Mail size={16} />} value={email} onChange={(event) => setEmail(event.currentTarget.value)} required />
             <PasswordInput label="Password" leftSection={<Lock size={16} />} value={password} onChange={(event) => setPassword(event.currentTarget.value)} required />
-            <Button type="submit" loading={loading} color="warm" c="#2b2622">
+            <Button type="submit" loading={loading} color="white" c="#1f1a17">
               Sign in
             </Button>
           </Stack>

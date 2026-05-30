@@ -22,7 +22,7 @@ export default function ProductsPage() {
     <Stack>
       <Group justify="space-between">
         <Title order={1}>Products</Title>
-        <Button leftSection={<Plus size={16} />} color="warm" c="#2b2622" onClick={open}>
+        <Button leftSection={<Plus size={16} />} color="white" c="#1f1a17" onClick={open}>
           Add Product
         </Button>
       </Group>

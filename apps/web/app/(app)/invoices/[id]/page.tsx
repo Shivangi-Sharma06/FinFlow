@@ -42,12 +42,12 @@ export default function InvoiceDetailPage() {
           <Badge size="lg" variant="light">
             {invoice.status}
           </Badge>
-          <Button variant="light" leftSection={<RefreshCw size={16} />} onClick={() => void load()}>
+          <Button variant="filled" color="white" c="#1f1a17" leftSection={<RefreshCw size={16} />} onClick={() => void load()}>
             Refresh
           </Button>
           <Button
-            color="warm"
-            c="#2b2622"
+            color="white"
+            c="#1f1a17"
             leftSection={<Download size={16} />}
             onClick={() => {
               const token = getStoredToken();

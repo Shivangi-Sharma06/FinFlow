@@ -107,10 +107,10 @@ export function InvoiceForm() {
         <InvoiceSummary totals={totals} isInterState={Boolean(isInterState)} />
       </SimpleGrid>
       <Group justify="flex-end">
-        <Button variant="light" leftSection={<Save size={16} />} loading={saving} onClick={() => void submit(false)}>
+        <Button variant="filled" color="white" c="#1f1a17" leftSection={<Save size={16} />} loading={saving} onClick={() => void submit(false)}>
           Save draft
         </Button>
-        <Button color="warm" c="#2b2622" leftSection={<Send size={16} />} loading={saving} onClick={() => void submit(true)}>
+        <Button color="white" c="#1f1a17" leftSection={<Send size={16} />} loading={saving} onClick={() => void submit(true)}>
           Issue invoice
         </Button>
       </Group>

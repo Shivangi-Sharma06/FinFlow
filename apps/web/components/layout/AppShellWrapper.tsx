@@ -29,9 +29,9 @@ export function AppShellWrapper({ children }: { children: React.ReactNode }) {
       navbar={{ width: 260, breakpoint: 'sm', collapsed: { mobile: !opened } }}
       padding="xl"
       styles={{
-        main: { background: '#2b2622', color: '#f7f5f0' },
-        header: { background: '#2b2622', borderColor: '#3f3a36' },
-        navbar: { background: '#2b2622', borderColor: '#3f3a36', padding: 16 }
+        main: { background: '#322b26', color: '#f7f5f0' },
+        header: { background: '#322b26', borderColor: '#4a423b' },
+        navbar: { background: '#322b26', borderColor: '#4a423b', padding: 16 }
       }}
     >
       <AppShell.Header>
