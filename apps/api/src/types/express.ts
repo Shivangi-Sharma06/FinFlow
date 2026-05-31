@@ -6,6 +6,7 @@ export type AuthUser = Pick<User, 'id' | 'name' | 'email' | 'role' | 'branchId'>
   branch?: Branch | null;
   organisation?: Organisation;
   isPlatformAdmin: boolean;
+  availableOrganisations: Array<{ id: string; name: string }>;
 };
 
 export type AuthRequest = Request & {

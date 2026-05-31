@@ -31,15 +31,13 @@ export function Sidebar() {
   useEffect(() => {
     const loadAuthContext = async () => {
       try {
-        const me = await apiFetch<{ user: { organisationId: string; isPlatformAdmin?: boolean } }>('/api/auth/me');
+        const me = await apiFetch<{
+          user: { organisationId: string; isPlatformAdmin?: boolean; availableOrganisations?: Array<{ id: string; name: string }> };
+        }>('/api/auth/me');
         const platformAdmin = Boolean(me.user.isPlatformAdmin);
         setIsPlatformAdmin(platformAdmin);
         setActiveOrganisationId(me.user.organisationId);
-
-        if (platformAdmin) {
-          const result = await apiFetch<{ organisations: Array<{ id: string; name: string }> }>('/api/auth/organisations');
-          setOrganisations(result.organisations);
-        }
+        setOrganisations(me.user.availableOrganisations ?? [{ id: me.user.organisationId, name: 'Current organisation' }]);
       } catch {
         setIsPlatformAdmin(false);
       }

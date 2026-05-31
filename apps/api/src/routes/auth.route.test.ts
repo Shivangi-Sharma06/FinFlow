@@ -91,7 +91,7 @@ describe('authRouter /login platform admin flow', () => {
     expect(response.body.code).toBe('FORBIDDEN');
   });
 
-  it('creates session with selected organisation for platform admin', async () => {
+  it('issues a token with selected organisation for platform admin', async () => {
     prismaMock.user.findUnique.mockResolvedValue({
       id: 'user-3',
       name: 'Platform Admin',
@@ -105,8 +105,11 @@ describe('authRouter /login platform admin flow', () => {
       organisation: null
     });
     compareMock.mockResolvedValue(true);
+    prismaMock.organisation.findMany.mockResolvedValue([
+      { id: 'org-1', name: 'Org One' },
+      { id: 'org-2', name: 'Org Two' }
+    ]);
     prismaMock.organisation.findUnique.mockResolvedValue({ id: 'org-2', name: 'Org Two' });
-    prismaMock.session.create.mockResolvedValue({ id: 'session-1' });
 
     const response = await request(makeApp()).post('/api/auth/login').send({
       email: 'platform@example.com',
@@ -117,8 +120,6 @@ describe('authRouter /login platform admin flow', () => {
     expect(response.status).toBe(200);
     expect(response.body.user.organisationId).toBe('org-2');
     expect(response.body.sessionToken).toBeTypeOf('string');
-    expect(prismaMock.session.create).toHaveBeenCalledTimes(1);
-    const firstCall = prismaMock.session.create.mock.calls.at(0);
-    expect(firstCall?.[0]?.data.organisationId).toBe('org-2');
+    expect(prismaMock.session.create).not.toHaveBeenCalled();
   });
 });

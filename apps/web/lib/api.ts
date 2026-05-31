@@ -8,6 +8,7 @@ type ApiUser = {
   organisationId: string;
   branchId: string | null;
   isPlatformAdmin: boolean;
+  availableOrganisations?: Array<{ id: string; name: string }>;
 };
 
 export type AuthMeResponse = { user: ApiUser };

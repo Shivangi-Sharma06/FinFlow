@@ -1,13 +1,44 @@
 import bcrypt from 'bcrypt';
-import { randomBytes } from 'node:crypto';
-import { addDays } from 'date-fns';
 import { Router } from 'express';
+import { SignJWT } from 'jose';
 import { asyncHandler } from '../lib/async-handler.js';
 import { prisma } from '../lib/prisma.js';
 import { requireAuth } from '../middleware/auth.middleware.js';
 import type { AuthRequest } from '../types/express.js';
 
 export const authRouter = Router();
+
+const AUTH_SECRET = process.env.AUTH_SECRET ?? process.env.JWT_SECRET ?? process.env.NEXTAUTH_SECRET ?? 'dev-auth-secret';
+const AUTH_ISSUER = 'finflow';
+
+type OrganisationClaim = { id: string; name: string };
+
+async function signSessionToken(input: {
+  userId: string;
+  name: string;
+  email: string;
+  role: string;
+  organisationId: string;
+  branchId: string | null;
+  isPlatformAdmin: boolean;
+  availableOrganisations: OrganisationClaim[];
+}) {
+  return new SignJWT({
+    name: input.name,
+    email: input.email,
+    role: input.role,
+    organisationId: input.organisationId,
+    branchId: input.branchId,
+    isPlatformAdmin: input.isPlatformAdmin,
+    availableOrganisations: input.availableOrganisations
+  })
+    .setProtectedHeader({ alg: 'HS256' })
+    .setSubject(input.userId)
+    .setIssuer(AUTH_ISSUER)
+    .setIssuedAt()
+    .setExpirationTime('30d')
+    .sign(new TextEncoder().encode(AUTH_SECRET));
+}
 
 authRouter.post(
   '/login',
@@ -32,17 +63,17 @@ authRouter.post(
     }
 
     const isPlatformAdmin = user.role === 'PLATFORM_ADMIN';
+    const availableOrganisations: OrganisationClaim[] = isPlatformAdmin
+      ? (await prisma.organisation.findMany({ select: { id: true, name: true }, orderBy: { name: 'asc' } }))
+      : [{ id: user.organisationId, name: user.organisation.name }];
+
     const resolvedOrganisationId = organisationId ?? user.organisationId;
 
     if (isPlatformAdmin && !resolvedOrganisationId) {
-      const organisations = await prisma.organisation.findMany({
-        select: { id: true, name: true },
-        orderBy: { name: 'asc' }
-      });
       return res.status(409).json({
         error: 'Organisation selection required for platform admin',
         code: 'ORGANISATION_REQUIRED',
-        organisations
+        organisations: availableOrganisations
       });
     }
 
@@ -63,14 +94,15 @@ authRouter.post(
       return res.status(404).json({ error: 'Organisation not found', code: 'NOT_FOUND' });
     }
 
-    const sessionToken = randomBytes(32).toString('base64url');
-    await prisma.session.create({
-      data: {
-        sessionToken,
-        userId: user.id,
-        organisationId: organisation.id,
-        expires: addDays(new Date(), 30)
-      }
+    const sessionToken = await signSessionToken({
+      userId: user.id,
+      name: user.name,
+      email: user.email,
+      role: user.role,
+      organisationId: organisation.id,
+      branchId: user.branchId,
+      isPlatformAdmin,
+      availableOrganisations
     });
 
     return res.json({
@@ -84,7 +116,8 @@ authRouter.post(
         branchId: user.branchId,
         branch: user.branch,
         organisation,
-        isPlatformAdmin
+        isPlatformAdmin,
+        availableOrganisations
       }
     });
   })
@@ -94,11 +127,6 @@ authRouter.post(
   '/logout',
   requireAuth,
   asyncHandler(async (req, res) => {
-    const header = req.headers.authorization;
-    const token = header?.startsWith('Bearer ') ? header.slice('Bearer '.length) : undefined;
-    if (token) {
-      await prisma.session.deleteMany({ where: { sessionToken: token } });
-    }
     return res.status(204).send();
   })
 );
@@ -110,11 +138,7 @@ authRouter.get(
     const user = (req as AuthRequest).user;
 
     if (user.isPlatformAdmin) {
-      const organisations = await prisma.organisation.findMany({
-        select: { id: true, name: true },
-        orderBy: { name: 'asc' }
-      });
-      return res.json({ organisations });
+      return res.json({ organisations: user.availableOrganisations ?? [] });
     }
 
     if (!user.organisation) {
@@ -135,34 +159,25 @@ authRouter.post(
       return res.status(400).json({ error: 'Organisation ID is required', code: 'BAD_REQUEST' });
     }
 
-    const header = req.headers.authorization;
-    const currentToken = header?.startsWith('Bearer ') ? header.slice('Bearer '.length) : undefined;
-
-    if (!currentToken) {
-      return res.status(401).json({ error: 'Authentication required', code: 'UNAUTHENTICATED' });
-    }
-
     if (!user.isPlatformAdmin && user.organisationId !== organisationId) {
       return res.status(403).json({ error: 'Access denied for requested organisation', code: 'FORBIDDEN' });
     }
 
-    const organisation = await prisma.organisation.findUnique({ where: { id: organisationId } });
+    const organisation = user.availableOrganisations?.find((entry) => entry.id === organisationId);
     if (!organisation) {
       return res.status(404).json({ error: 'Organisation not found', code: 'NOT_FOUND' });
     }
 
-    const sessionToken = randomBytes(32).toString('base64url');
-    await prisma.$transaction([
-      prisma.session.deleteMany({ where: { sessionToken: currentToken } }),
-      prisma.session.create({
-        data: {
-          sessionToken,
-          userId: user.id,
-          organisationId,
-          expires: addDays(new Date(), 30)
-        }
-      })
-    ]);
+    const sessionToken = await signSessionToken({
+      userId: user.id,
+      name: user.name,
+      email: user.email,
+      role: user.role,
+      organisationId,
+      branchId: user.branchId,
+      isPlatformAdmin: user.isPlatformAdmin,
+      availableOrganisations: user.availableOrganisations ?? [organisation]
+    });
 
     return res.json({
       sessionToken,
