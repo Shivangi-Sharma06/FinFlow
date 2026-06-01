@@ -75,7 +75,7 @@ export function InvoiceLineItems({
         ))}
         <Table.Tr>
           <Table.Td colSpan={6}>
-            <ActionIcon variant="light" color="white" onClick={() => onChange([...lines, { productId: '', description: '', quantity: 1, rate: 0, discount: 0 }])} aria-label="Add line">
+            <ActionIcon variant="light" color="warm" onClick={() => onChange([...lines, { productId: '', description: '', quantity: 1, rate: 0, discount: 0 }])} aria-label="Add line">
               <Plus size={16} />
             </ActionIcon>
           </Table.Td>

@@ -28,13 +28,13 @@ export default function InvoiceDetailPage() {
   useEffect(() => {
     void load();
   }, [params.id]);
-  if (!invoice) return <Text c="#c9c0ad">Loading invoice...</Text>;
+  if (!invoice) return <Text c="#4b3b41">Loading invoice...</Text>;
   return (
     <Stack>
       <Group justify="space-between">
         <div>
           <Title order={1}>{invoice.invoiceNumber}</Title>
-          <Text c="#c9c0ad">
+          <Text c="#4b3b41">
             {invoice.customer.name} | {invoice.branch.name}
           </Text>
         </div>
@@ -42,12 +42,11 @@ export default function InvoiceDetailPage() {
           <Badge size="lg" variant="light">
             {invoice.status}
           </Badge>
-          <Button variant="filled" color="white" c="#1f1a17" leftSection={<RefreshCw size={16} />} onClick={() => void load()}>
+          <Button variant="filled" color="warm" leftSection={<RefreshCw size={16} />} onClick={() => void load()}>
             Refresh
           </Button>
           <Button
-            color="white"
-            c="#1f1a17"
+            color="warm"
             leftSection={<Download size={16} />}
             onClick={() => {
               const token = getStoredToken();
@@ -60,19 +59,19 @@ export default function InvoiceDetailPage() {
       </Group>
       <SimpleGrid cols={{ base: 1, md: 3 }}>
         <Paper className="surface" p="lg">
-          <Text c="#aea69c" size="xs" tt="uppercase" ff="monospace">
+          <Text c="#6b5a61" size="xs" tt="uppercase" ff="monospace">
             Supply
           </Text>
           <Text>{invoice.isInterState ? 'Inter-state supply (IGST)' : 'Intra-state supply (CGST + SGST)'}</Text>
         </Paper>
         <Paper className="surface" p="lg">
-          <Text c="#aea69c" size="xs" tt="uppercase" ff="monospace">
+          <Text c="#6b5a61" size="xs" tt="uppercase" ff="monospace">
             Grand total
           </Text>
           <Text size="xl">{currency(Number(invoice.grandTotal))}</Text>
         </Paper>
         <Paper className="surface" p="lg">
-          <Text c="#aea69c" size="xs" tt="uppercase" ff="monospace">
+          <Text c="#6b5a61" size="xs" tt="uppercase" ff="monospace">
             Balance due
           </Text>
           <Text size="xl">{currency(Number(invoice.balanceDue))}</Text>

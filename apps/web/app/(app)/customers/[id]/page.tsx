@@ -13,11 +13,11 @@ export default function CustomerDetailPage() {
   useEffect(() => {
     void apiFetch<{ customer: CustomerDetail }>(`/api/customers/${params.id}`).then((response) => setCustomer(response.customer));
   }, [params.id]);
-  if (!customer) return <Text c="#c9c0ad">Loading customer...</Text>;
+  if (!customer) return <Text c="#4b3b41">Loading customer...</Text>;
   return (
     <Stack>
       <Title order={1}>{customer.name}</Title>
-      <Text c="#c9c0ad">GSTIN: {customer.gstin ?? '-'}</Text>
+      <Text c="#4b3b41">GSTIN: {customer.gstin ?? '-'}</Text>
       <Paper className="surface" p="lg">
         <Title order={2} mb="md">
           Statement

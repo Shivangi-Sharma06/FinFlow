@@ -33,10 +33,10 @@ export default function InvoicesPage() {
             onChange={setStatus}
             w={180}
           />
-          <Button leftSection={<RefreshCw size={16} />} variant="filled" color="white" c="#1f1a17" onClick={() => void load()}>
+          <Button leftSection={<RefreshCw size={16} />} variant="filled" color="warm" onClick={() => void load()}>
             Refresh
           </Button>
-          <Button component={Link} href="/invoices/new" color="white" c="#1f1a17" leftSection={<Plus size={16} />}>
+          <Button component={Link} href="/invoices/new" color="warm" leftSection={<Plus size={16} />}>
             New Invoice
           </Button>
         </Group>

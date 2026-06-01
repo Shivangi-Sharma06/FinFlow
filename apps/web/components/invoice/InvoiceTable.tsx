@@ -55,7 +55,7 @@ export function InvoiceTable({ invoices }: { invoices: Invoice[] }) {
           {invoices.length === 0 ? (
             <Table.Tr>
               <Table.Td colSpan={6}>
-                <Text ta="center" c="#aea69c">
+                <Text ta="center" c="#6b5a61">
                   No invoices yet
                 </Text>
               </Table.Td>

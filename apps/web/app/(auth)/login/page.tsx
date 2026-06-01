@@ -54,15 +54,15 @@ export default function LoginPage() {
   }
 
   return (
-    <Center mih="100vh" bg="#322b26" p="xl">
+    <Center mih="100vh" bg="#e6dfe4" p="xl">
       <Paper className="surface" p="xl" w="100%" maw={420}>
         <form onSubmit={submit}>
           <Stack>
             <div>
-              <Title order={1} c="#f7f5f0">
+              <Title order={1} c="#111111">
                 Welcome to LedgerX
               </Title>
-              <Text c="#c9c0ad" size="sm">
+              <Text c="#4b3b41" size="sm">
                 Sign in to your organisation workspace
               </Text>
             </div>
@@ -87,7 +87,7 @@ export default function LoginPage() {
                 placeholder="Only required for platform admins"
               />
             )}
-            <Button type="submit" loading={loading} color="white" c="#1f1a17">
+            <Button type="submit" loading={loading} color="warm">
               Continue to dashboard
             </Button>
           </Stack>

@@ -28,7 +28,7 @@ export default function DashboardPage() {
     <Stack>
       <Group justify="space-between">
         <Title order={1}>Dashboard</Title>
-        <Button leftSection={<RefreshCw size={16} />} variant="filled" color="white" c="#1f1a17" onClick={() => void load()}>
+        <Button leftSection={<RefreshCw size={16} />} variant="filled" color="warm" onClick={() => void load()}>
           Refresh
         </Button>
       </Group>

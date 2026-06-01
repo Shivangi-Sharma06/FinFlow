@@ -37,7 +37,7 @@ export function CustomerForm({ opened, onClose, onSaved }: { opened: boolean; on
         <TextInput label="Name" value={name} onChange={(event) => setName(event.currentTarget.value)} />
         <TextInput label="GSTIN" value={gstin} onChange={(event) => setGstin(event.currentTarget.value)} />
         <Select label="State" data={states} value={stateCode} onChange={(value) => setStateCode(value ?? '27')} searchable />
-        <Button onClick={() => void save()} color="white" c="#1f1a17">
+        <Button onClick={() => void save()} color="warm">
           Save
         </Button>
       </SimpleGrid>

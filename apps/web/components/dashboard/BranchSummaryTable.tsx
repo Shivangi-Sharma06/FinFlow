@@ -32,7 +32,7 @@ export function BranchSummaryTable({ rows }: { rows: Row[] }) {
           {rows.length === 0 ? (
             <Table.Tr>
               <Table.Td colSpan={4}>
-                <Text c="#aea69c" ta="center">
+                <Text c="#6b5a61" ta="center">
                   No branch activity yet
                 </Text>
               </Table.Td>

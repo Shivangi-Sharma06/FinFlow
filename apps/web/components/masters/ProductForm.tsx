@@ -42,7 +42,7 @@ export function ProductForm({ opened, onClose, onSaved }: { opened: boolean; onC
         <NumberInput label="Selling price" value={sellingPrice} onChange={(value) => setSellingPrice(Number(value))} />
       </SimpleGrid>
       <Group justify="flex-end" mt="lg">
-        <Button onClick={() => void save()} color="white" c="#1f1a17">
+        <Button onClick={() => void save()} color="warm">
           Save
         </Button>
       </Group>

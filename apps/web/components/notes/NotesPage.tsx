@@ -22,7 +22,7 @@ export function NotesPage({ endpoint, title, createHref }: { endpoint: string; t
     <Stack>
       <Group justify="space-between">
         <Title order={1}>{title}</Title>
-        <Button component={Link} href={createHref} leftSection={<Plus size={16} />} color="white" c="#1f1a17">
+        <Button component={Link} href={createHref} leftSection={<Plus size={16} />} color="warm">
           New
         </Button>
       </Group>

@@ -90,7 +90,7 @@ export function InvoiceForm() {
             <TextInput label="Invoice date" type="date" value={invoiceDate} onChange={(event) => setInvoiceDate(event.currentTarget.value)} />
             <TextInput label="Due date" type="date" value={dueDate} onChange={(event) => setDueDate(event.currentTarget.value)} />
           </SimpleGrid>
-          <Text c="#c9c0ad" size="sm">
+          <Text c="#4b3b41" size="sm">
             {isInterState ? 'Inter-state supply (IGST)' : 'Intra-state supply (CGST + SGST)'}
           </Text>
         </Stack>
@@ -111,10 +111,10 @@ export function InvoiceForm() {
         <InvoiceSummary totals={totals} isInterState={Boolean(isInterState)} />
       </SimpleGrid>
       <Group justify="flex-end">
-        <Button variant="filled" color="white" c="#1f1a17" leftSection={<Save size={16} />} loading={saving} onClick={() => void submit(false)}>
+        <Button variant="filled" color="warm" leftSection={<Save size={16} />} loading={saving} onClick={() => void submit(false)}>
           Save draft
         </Button>
-        <Button color="white" c="#1f1a17" leftSection={<Send size={16} />} loading={saving} onClick={() => void submit(true)}>
+        <Button color="warm" leftSection={<Send size={16} />} loading={saving} onClick={() => void submit(true)}>
           Issue invoice
         </Button>
       </Group>

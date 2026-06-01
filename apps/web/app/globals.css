@@ -1,13 +1,14 @@
 @import url('https://fonts.googleapis.com/css2?family=DM+Mono&family=Inter:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap');
 
 :root {
-  color-scheme: dark;
+  color-scheme: light;
 }
 
 html,
 body {
   min-height: 100%;
-  background: #322b26;
+  background: #e6dfe4;
+  color: #111111;
 }
 
 body {
@@ -20,8 +21,8 @@ a {
 }
 
 .surface {
-  background: #3d3731;
-  border: 1px solid #4a423b;
+  background: #fff1f5;
+  border: 1px solid #e8d6dd;
 }
 
 .tableWrap {

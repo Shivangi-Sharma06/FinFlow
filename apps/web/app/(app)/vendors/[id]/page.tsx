@@ -13,7 +13,7 @@ export default function VendorDetailPage() {
   useEffect(() => {
     void apiFetch<{ vendor: VendorDetail }>(`/api/vendors/${params.id}`).then((response) => setVendor(response.vendor));
   }, [params.id]);
-  if (!vendor) return <Text c="#c9c0ad">Loading vendor...</Text>;
+  if (!vendor) return <Text c="#4b3b41">Loading vendor...</Text>;
   return (
     <Stack>
       <Title order={1}>{vendor.name}</Title>

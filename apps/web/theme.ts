@@ -4,19 +4,21 @@ export const theme = createTheme({
   fontFamily: 'Inter, system-ui, -apple-system, Segoe UI, Roboto, sans-serif',
   fontFamilyMonospace: 'DM Mono, ui-monospace, SFMono-Regular, Menlo, monospace',
   defaultRadius: 'sm',
+  autoContrast: true,
   primaryColor: 'warm',
+  primaryShade: 3,
   colors: {
     warm: [
-      '#f7f5f0',
-      '#ebe4d8',
-      '#dad2c1',
-      '#c9c0ad',
-      '#aea69c',
-      '#756d65',
-      '#514a44',
-      '#3f3a36',
-      '#383330',
-      '#2b2622'
+      '#fff8fb',
+      '#ffeef5',
+      '#ffe2ec',
+      '#f9d2e0',
+      '#efbfd0',
+      '#d6a4b8',
+      '#b78499',
+      '#916574',
+      '#6c4955',
+      '#4a313b'
     ]
   },
   radius: {
@@ -37,7 +39,7 @@ export const theme = createTheme({
     Button: {
       defaultProps: {
         radius: 'sm',
-        color: 'white'
+        color: 'warm'
       }
     },
     Paper: {

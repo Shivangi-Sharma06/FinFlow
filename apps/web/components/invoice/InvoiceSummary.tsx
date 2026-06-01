@@ -10,7 +10,7 @@ export function InvoiceSummary({
   return (
     <Paper className="surface" p="lg">
       <Stack gap={6}>
-        <Text size="sm" c="#c9c0ad">
+        <Text size="sm" c="#4b3b41">
           {isInterState ? 'Inter-state supply (IGST)' : 'Intra-state supply (CGST + SGST)'}
         </Text>
         <Line label="Subtotal" value={totals.subtotal} />
@@ -27,7 +27,7 @@ export function InvoiceSummary({
 
 function Line({ label, value, strong }: { label: string; value: number; strong?: boolean }) {
   return (
-    <Text component="div" size={strong ? 'lg' : 'sm'} fw={strong ? 600 : 400} c={strong ? '#f7f5f0' : '#dad2c1'} style={{ display: 'flex', justifyContent: 'space-between' }}>
+    <Text component="div" size={strong ? 'lg' : 'sm'} fw={strong ? 600 : 400} c={strong ? '#111111' : '#4b3b41'} style={{ display: 'flex', justifyContent: 'space-between' }}>
       <span>{label}</span>
       <span>{currency(value)}</span>
     </Text>
